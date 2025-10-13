@@ -1,7 +1,9 @@
 <script lang="ts">
+	import { loginUser } from '$lib/api/api';
 	import { onMount } from 'svelte';
+	import { goto } from '$app/navigation';
 
-	let email: string = '';
+	let username: string = '';
 	let password: string = '';
 	let rememberMe: boolean = false;
 	let isLoading: boolean = false;
@@ -10,8 +12,8 @@
 
 	// Form validation
 	function validateForm(): boolean {
-		if (!email || !email.includes('@')) {
-			errorMessage = 'Please enter a valid email address';
+		if (!username) {
+			errorMessage = 'Please enter a username';
 			return false;
 		}
 		if (!password || password.length < 6) {
@@ -20,29 +22,26 @@
 		}
 		return true;
 	}
-	
+
 	async function handleLogin(event: Event): Promise<void> {
 		event.preventDefault();
 		errorMessage = '';
-		
+
 		if (!validateForm()) return;
-		
+
 		isLoading = true;
-		
-		// Simulate login API call
+
 		try {
-			await new Promise(resolve => setTimeout(resolve, 1500));
-			// Here you would typically make an API call to your backend
-			console.log('Login attempt:', { email, password, rememberMe });
-			// Redirect to dashboard on successful login
-			window.location.href = '/dashboard';
+			await loginUser({ username, password });
+			goto('/dashboard');
 		} catch (error) {
+            console.log(error)
 			errorMessage = 'Login failed. Please try again.';
 		} finally {
 			isLoading = false;
 		}
 	}
-	
+
 	function togglePasswordVisibility(): void {
 		showPassword = !showPassword;
 	}
@@ -69,29 +68,29 @@
 		<form class="mt-8 space-y-6" on:submit={handleLogin}>
 			<div class="space-y-4">
 				<!-- Email Input -->
-				<div>
-					<label for="email" class="block text-sm font-medium text-gray-700 mb-1">
-						Email address
-					</label>
-					<div class="relative">
-						<input
-							id="email"
-							name="email"
-							type="email"
-							autocomplete="email"
-							required
-							bind:value={email}
-							class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 placeholder-gray-400"
-							placeholder="Enter your email"
-							disabled={isLoading}
-						/>
-						<div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-							<svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207"></path>
-							</svg>
-						</div>
-					</div>
-				</div>
+                <div>
+                    <label for="username" class="block text-sm font-medium text-gray-700 mb-1">
+                        Username
+                    </label>
+                    <div class="relative">
+                        <input
+                            id="username"
+                            name="username"
+                            type="text"
+                            autocomplete="username"
+                            required
+                            bind:value={username}
+                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 placeholder-gray-400"
+                            placeholder="Enter your username"
+                            disabled={isLoading}
+                        />
+                        <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                            <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207"></path>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
 
 				<!-- Password Input -->
 				<div>
