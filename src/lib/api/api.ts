@@ -3,7 +3,8 @@ import axios from 'axios';
 // Create an Axios instance with a base URL
 // Replace with your backend URL, e.g., 'http://localhost:5000'
 const api = axios.create({
-	baseURL: 'https://budget-tracker-back-end.vercel.app' // 'https://budget-tracker-back-end.vercel.app' // Adjust the URL as needed
+	baseURL: 'http://localhost:5000', // 'https://budget-tracker-back-end.vercel.app' // Adjust the URL as needed
+	withCredentials: true
 });
 
 // A simple API function to handle user registration
@@ -27,6 +28,12 @@ export async function addExpense(userId: number, expenseData: { amount: number; 
 // A function to get all expenses for a specific user
 export async function getExpenses(userId: number) {
 	const response = await api.get(`/users/${userId}/expenses`);
+	return response.data.expenses;
+}
+
+// A function to get expenses from a specific date for a specific user
+export async function getExpensesFromDate(userId: number, startDate: string) {
+	const response = await api.get(`/users/${userId}/expenses/from/${startDate}`);
 	return response.data.expenses;
 }
 
