@@ -1,10 +1,11 @@
 <script lang="ts">
 	import { resetPassword } from "$lib/api/api";
 	import { goto } from "$app/navigation";
-	import { page } from "$app/stores";
 
-	let email: string = "";
-	let token: string = "";
+	export let data;
+
+	let email: string = data.email || "";
+	let token: string = data.token || "";
 	let newPassword: string = "";
 	let confirmPassword: string = "";
 	let showPassword: boolean = false;
@@ -12,12 +13,6 @@
 	let successMessage: string = "";
 	let errorMessage: string = "";
 	let step: 'form' | 'success' = 'form';
-
-	// Get query parameters
-	$: if ($page.url) {
-		email = $page.url.searchParams.get('email') || '';
-		token = $page.url.searchParams.get('token') || '';
-	}
 
 	function validateForm(): boolean {
 		if (!newPassword || !confirmPassword) {
