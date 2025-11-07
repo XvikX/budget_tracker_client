@@ -7,6 +7,20 @@ const api = axios.create({
 	withCredentials: true
 });
 
+// Add JWT token to request headers if available
+api.interceptors.request.use(
+	(config) => {
+		const token = localStorage.getItem('authToken');
+		if (token) {
+			config.headers.Authorization = `Bearer ${token}`;
+		}
+		return config;
+	},
+	(error) => {
+		return Promise.reject(error);
+	}
+);
+
 // A simple API function to handle user registration
 export async function registerUser(userData: { email: string; password: string }) {
 	const response = await api.post('/register', userData);
@@ -16,6 +30,10 @@ export async function registerUser(userData: { email: string; password: string }
 // A simple API function to handle user login
 export async function loginUser(userData: { email: string; password: string }) {
 	const response = await api.post('/login', userData);
+	// Store the token in localStorage
+	if (response.data.token) {
+		localStorage.setItem('authToken', response.data.token);
+	}
 	return response.data;
 }
 
@@ -39,6 +57,8 @@ export async function getExpensesFromDate(userId: string | number, startDate: st
 
 // A function to handle user logout
 export async function logoutUser() {
+	// Remove token from localStorage
+	localStorage.removeItem('authToken');
 	const response = await api.get('/logout');
 	return response.data;
 }

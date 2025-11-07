@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { loginUser } from "$lib/api/api";
-	import { userId } from "$lib/stores/user";
+	import { userId, authToken } from "$lib/stores/user";
 	import { goto } from "$app/navigation";
 
 	let email: string = "";
@@ -40,8 +40,9 @@
 
 		try {
 			const response = await loginUser({ email, password });
-			if (response.user_id) {
+			if (response.user_id && response.token) {
 				userId.set(response.user_id);
+				authToken.set(response.token);
 				goto("/dashboard");
 			}
 		} catch (error) {
