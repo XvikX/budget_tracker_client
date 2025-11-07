@@ -3,17 +3,24 @@
 	import { userId } from "$lib/stores/user";
 	import { goto } from "$app/navigation";
 
-	let username: string = "";
+	let email: string = "";
 	let password: string = "";
 	let rememberMe: boolean = false;
 	let isLoading: boolean = false;
 	let errorMessage: string = "";
 	let showPassword: boolean = false;
 
+	// Email validation regex
+	const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
 	// Form validation
 	function validateForm(): boolean {
-		if (!username) {
-			errorMessage = "Please enter a username";
+		if (!email) {
+			errorMessage = "Please enter your email";
+			return false;
+		}
+		if (!emailRegex.test(email)) {
+			errorMessage = "Please enter a valid email address";
 			return false;
 		}
 		if (!password || password.length < 6) {
@@ -32,7 +39,7 @@
 		isLoading = true;
 
 		try {
-			const response = await loginUser({ username, password });
+			const response = await loginUser({ email, password });
 			if (response.user_id) {
 				userId.set(response.user_id);
 				goto("/dashboard");
@@ -55,16 +62,16 @@
 </svelte:head>
 
 <div
-	class="min-h-screen bg-gradient-to-br from-blue-50 to-white flex items-center justify-center p-4"
+	class="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center p-4"
 >
 	<div class="max-w-md w-full space-y-8">
 		<!-- Logo/Header Section -->
 		<div class="text-center">
 			<div
-				class="mx-auto h-16 w-16 bg-blue-500 rounded-full flex items-center justify-center shadow-lg"
+				class="mx-auto h-20 w-20 bg-gradient-to-br from-cyan-400 to-blue-500 rounded-2xl flex items-center justify-center shadow-2xl"
 			>
 				<svg
-					class="h-8 w-8 text-white"
+					class="h-10 w-10 text-white"
 					fill="none"
 					stroke="currentColor"
 					viewBox="0 0 24 24"
@@ -77,40 +84,40 @@
 					></path>
 				</svg>
 			</div>
-			<h2 class="mt-6 text-3xl font-bold text-gray-900">Welcome back</h2>
-			<p class="mt-2 text-sm text-gray-600">
-				Sign in to your Budget Tracker account
+			<h2 class="mt-8 text-4xl font-bold text-white">Budget Tracker</h2>
+			<p class="mt-3 text-lg text-white/70">
+				Manage your finances with intelligence
 			</p>
 		</div>
 
 		<!-- Login Form -->
-		<form class="mt-8 space-y-6" on:submit={handleLogin}>
-			<div class="space-y-4">
+		<form class="mt-10 space-y-6" on:submit={handleLogin}>
+			<div class="bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 p-8 shadow-xl space-y-4">
 				<!-- Email Input -->
 				<div>
 					<label
-						for="username"
-						class="block text-sm font-medium text-gray-700 mb-1"
+						for="email"
+						class="block text-sm font-semibold text-white mb-2"
 					>
-						Username
+						Email
 					</label>
 					<div class="relative">
 						<input
-							id="username"
-							name="username"
-							type="text"
-							autocomplete="username"
+							id="email"
+							name="email"
+							type="email"
+							autocomplete="email"
 							required
-							bind:value={username}
-							class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 placeholder-gray-400"
-							placeholder="Enter your username"
+							bind:value={email}
+							class="w-full px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 placeholder-slate-400 bg-white/90 hover:bg-white"
+							placeholder="Enter your email"
 							disabled={isLoading}
 						/>
 						<div
-							class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none"
+							class="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none"
 						>
 							<svg
-								class="h-5 w-5 text-gray-400"
+								class="h-5 w-5 text-slate-400"
 								fill="none"
 								stroke="currentColor"
 								viewBox="0 0 24 24"
@@ -130,7 +137,7 @@
 				<div>
 					<label
 						for="password"
-						class="block text-sm font-medium text-gray-700 mb-1"
+						class="block text-sm font-semibold text-white mb-2"
 					>
 						Password
 					</label>
@@ -143,7 +150,7 @@
 								autocomplete="current-password"
 								required
 								bind:value={password}
-								class="w-full px-4 py-3 pr-12 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 placeholder-gray-400"
+								class="w-full px-4 py-3 pr-12 border border-slate-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 placeholder-slate-400 bg-white/90 hover:bg-white"
 								placeholder="Enter your password"
 								disabled={isLoading}
 							/>
@@ -155,20 +162,20 @@
 								autocomplete="current-password"
 								required
 								bind:value={password}
-								class="w-full px-4 py-3 pr-12 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 placeholder-gray-400"
+								class="w-full px-4 py-3 pr-12 border border-slate-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 placeholder-slate-400 bg-white/90 hover:bg-white"
 								placeholder="Enter your password"
 								disabled={isLoading}
 							/>
 						{/if}
 						<button
 							type="button"
-							class="absolute inset-y-0 right-0 pr-3 flex items-center"
+							class="absolute inset-y-0 right-0 pr-4 flex items-center hover:text-slate-600 transition-colors"
 							on:click={togglePasswordVisibility}
 							disabled={isLoading}
 						>
 							{#if showPassword}
 								<svg
-									class="h-5 w-5 text-gray-400 hover:text-gray-600"
+									class="h-5 w-5 text-slate-400"
 									fill="none"
 									stroke="currentColor"
 									viewBox="0 0 24 24"
@@ -182,7 +189,7 @@
 								</svg>
 							{:else}
 								<svg
-									class="h-5 w-5 text-gray-400 hover:text-gray-600"
+									class="h-5 w-5 text-slate-400"
 									fill="none"
 									stroke="currentColor"
 									viewBox="0 0 24 24"
@@ -207,19 +214,19 @@
 			</div>
 
 			<!-- Remember Me & Forgot Password -->
-			<div class="flex items-center justify-between">
+			<div class="flex items-center justify-between px-2">
 				<div class="flex items-center">
 					<input
 						id="remember-me"
 						name="remember-me"
 						type="checkbox"
 						bind:checked={rememberMe}
-						class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+						class="h-4 w-4 text-purple-500 focus:ring-purple-500 border-slate-300 rounded"
 						disabled={isLoading}
 					/>
 					<label
 						for="remember-me"
-						class="ml-2 block text-sm text-gray-700"
+						class="ml-2 block text-sm text-white/70"
 					>
 						Remember me
 					</label>
@@ -227,10 +234,10 @@
 
 				<div class="text-sm">
 					<a
-						href="#"
-						class="font-medium text-blue-600 hover:text-blue-500 transition-colors duration-200"
+						href="/forgot-password"
+						class="font-medium text-cyan-400 hover:text-cyan-300 transition-colors duration-200"
 					>
-						Forgot your password?
+						Forgot password?
 					</a>
 				</div>
 			</div>
@@ -238,7 +245,7 @@
 			<!-- Error Message -->
 			{#if errorMessage}
 				<div
-					class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm"
+					class="bg-red-500/20 border border-red-500/50 text-red-200 px-4 py-3 rounded-xl text-sm backdrop-blur-md"
 				>
 					{errorMessage}
 				</div>
@@ -249,7 +256,7 @@
 				<button
 					type="submit"
 					disabled={isLoading}
-					class="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-lg hover:shadow-xl"
+					class="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-semibold rounded-xl text-white bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-lg hover:shadow-xl"
 				>
 					{#if isLoading}
 						<svg
@@ -293,11 +300,11 @@
 
 			<!-- Sign Up Link -->
 			<div class="text-center">
-				<p class="text-sm text-gray-600">
+				<p class="text-sm text-white/70">
 					Don't have an account?
 					<a
-						href="#"
-						class="font-medium text-blue-600 hover:text-blue-500 transition-colors duration-200"
+						href="/signup"
+						class="font-semibold text-cyan-400 hover:text-cyan-300 transition-colors duration-200"
 					>
 						Sign up here
 					</a>
@@ -305,13 +312,22 @@
 			</div>
 		</form>
 
-		<!-- Decorative Elements -->
-		<div class="mt-8 flex justify-center space-x-4">
-			<div class="h-1 w-1 bg-blue-200 rounded-full"></div>
-			<div class="h-1 w-1 bg-blue-300 rounded-full"></div>
-			<div class="h-1 w-1 bg-blue-400 rounded-full"></div>
-			<div class="h-1 w-1 bg-blue-300 rounded-full"></div>
-			<div class="h-1 w-1 bg-blue-200 rounded-full"></div>
+		<!-- Features Highlight -->
+		<div class="bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 p-6 shadow-xl">
+			<div class="grid grid-cols-3 gap-4">
+				<div class="text-center">
+					<div class="text-2xl mb-2">📊</div>
+					<p class="text-xs text-white/60">Track Expenses</p>
+				</div>
+				<div class="text-center">
+					<div class="text-2xl mb-2">📈</div>
+					<p class="text-xs text-white/60">View Analytics</p>
+				</div>
+				<div class="text-center">
+					<div class="text-2xl mb-2">💰</div>
+					<p class="text-xs text-white/60">Smart Budgeting</p>
+				</div>
+			</div>
 		</div>
 	</div>
 </div>
